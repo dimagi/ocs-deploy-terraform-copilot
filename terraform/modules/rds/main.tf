@@ -1,16 +1,5 @@
-data "aws_caller_identity" "current" {}
-data "aws_availability_zones" "available" {}
-
 locals {
   name    = "${var.application_name}-${var.environment}-postgres"
-
-  vpc_cidr = "10.0.0.0/16"
-  azs      = slice(data.aws_availability_zones.available.names, 0, 2)
-
-  tags = {
-    copilot-environment: var.environment
-    copilot-application: var.application_name
-  }
 }
 
 module "db" {
@@ -61,6 +50,26 @@ module "db" {
       value = "utf8"
     }
   ]
+}
 
-  tags = local.tags
+module "postgres_sg" {
+  source  = "terraform-aws-modules/security-group/aws//modules/postgresql"
+  version = "~> 5.0"
+
+  name        = "${local.name}-security-group"
+  description = "PostgreSQL security group"
+  vpc_id      = var.vpc_id
+
+  ingress_cidr_blocks = var.ingress_cidr_blocks
+}
+
+# put the db_instance_address in a secret for reference in other resources
+resource "aws_secretsmanager_secret" "db_instance_address" {
+  name                    = "db_instance_endpoint_arn"
+  description             = "RDS database instance endpoint ARN"
+}
+
+resource "aws_secretsmanager_secret_version" "db_instance_address" {
+  secret_id     = aws_secretsmanager_secret.db_instance_address.id
+  secret_string = module.db.db_instance_address
 }

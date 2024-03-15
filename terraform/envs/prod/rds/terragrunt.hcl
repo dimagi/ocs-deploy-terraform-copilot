@@ -12,9 +12,8 @@ dependency "network" {
 }
 
 inputs = {
-  vpc_id            = dependency.network.outputs.vpc_id
-  subnets           = dependency.network.outputs.public_subnets
-  egress_cidr_block = dependency.network.outputs.vpc_cidr_block
+  vpc_id                     = dependency.network.outputs.vpc_id
+  ingress_cidr_blocks        = dependency.network.outputs.application_cidr_blocks
 
   db_name                    = "ocs_${include.env.locals.environment}"
   db_username                = "ocs_${include.env.locals.environment}_user"
