@@ -1,3 +1,4 @@
+# configuration for terraform state management with s3 and dynamodb
 remote_state {
   backend = "s3"
   generate = {
@@ -13,6 +14,7 @@ remote_state {
   }
 }
 
+# terraform versions and provider configuration
 generate "provider" {
   path = "provider.tf"
   if_exists = "overwrite_terragrunt"
@@ -45,6 +47,7 @@ provider "aws" {
 EOF
 }
 
+# application wide variables
 generate "common_vars" {
   path = "common_vars.tf"
   if_exists = "overwrite_terragrunt"
@@ -63,7 +66,8 @@ variable "aws_region" {
 EOF
 }
 
+# load the module Terraform files from the relative path
 terraform {
-    # load the module Terraform files from the relative path
+    # use 'basename' to drop the environment name from the path
     source = "${get_parent_terragrunt_dir()}/../modules/${basename(path_relative_to_include())}"
 }
