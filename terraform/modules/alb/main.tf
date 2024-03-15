@@ -1,10 +1,5 @@
 locals {
   name    = "${var.application_name}-${var.environment}-alb"
-
-  tags = {
-    copilot-environment: var.environment
-    copilot-application: var.application_name
-  }
 }
 
 module "alb" {
@@ -15,6 +10,8 @@ module "alb" {
   subnets = var.subnets
 
   # TODO: WAF: web_acl_arn
+  # https://medium.com/appgambit/terraform-wafv2-web-acl-38b60fdde8ba
+  # https://github.com/dimagi/commcare-cloud/blob/d3d74ce553845b9825d9d4a858bfe34054c4653a/src/commcare_cloud/terraform/modules/ga_alb_waf/main.tf
 
   # Security Group
   security_group_ingress_rules = {
@@ -46,46 +43,32 @@ module "alb" {
   }
 
   listeners = {
-    http = {
-      port               = 80
-      protocol           = "HTTP"
-      fixed_response     = {
-        content_type = "text/plain"
-        message_body = "Hello, World"
-        status_code  = "200"
+    ex-http-https-redirect = {
+      port     = 80
+      protocol = "HTTP"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
       }
     }
+    ex-https = {
+      port            = 443
+      protocol        = "HTTPS"
+      certificate_arn = var.certificate_arn
+
+      # default will only be used if no other rules match
+      fixed_response     = {
+        content_type = "text/plain"
+        message_body = "Not Found"
+        status_code  = "404"
+      }
+    }
+
+    forward = {
+      target_group_key = "ex-instance"
+    }
   }
-#     ex-http-https-redirect = {
-#       port     = 80
-#       protocol = "HTTP"
-#       redirect = {
-#         port        = "443"
-#         protocol    = "HTTPS"
-#         status_code = "HTTP_301"
-#       }
-#     }
-#     ex-https = {
-#       port            = 443
-#       protocol        = "HTTPS"
-#       certificate_arn = var.certificate_arn
-#     }
-#
-#     forward = {
-#       target_group_key = "ex-instance"
-#     }
-#   }
-
-#   target_groups = {
-#     ex-instance = {
-#       name_prefix      = "h1"
-#       protocol         = "HTTP"
-#       port             = 80
-#       target_type      = "instance"
-#     }
-#   }
-
-  tags = local.tags
 }
 
 
@@ -104,6 +87,4 @@ module "log_bucket" {
 
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
-
-  tags = local.tags
 }
