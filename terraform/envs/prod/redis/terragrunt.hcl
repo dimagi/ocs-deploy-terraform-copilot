@@ -13,6 +13,6 @@ dependency "network" {
 
 inputs = {
   vpc_id                     = dependency.network.outputs.vpc_id
-  redis_subnets              = dependency.network.outputs.elasticache_subnets
   ingress_cidr_blocks        = dependency.network.outputs.application_cidr_blocks
+  redis_subnet_group         = dependency.network.outputs.elasticache_subnet_group
 }

@@ -8,7 +8,12 @@ export AWS_PROFILE=ocs-test
 aws sso login --profile ocs-test
 
 cd terraform/envs/prod
-terragrunt run-all []--terragrunt-include-dir network --terragrunt-include-dir rds ...]
+
+# For a fresh install you must set up the network first:
+terragrunt run-all --terragrunt-include-dir cert --terragrunt-include-dir network [plan,apply]
+terragrunt run-all --terragrunt-include-dir alb --terragrunt-include-dir rds --terragrunt-include-dir redis [plan,apply]
+
+
 copilot app init ocs-dimagi
 copilot env init -n test --import-vpc-id vpc-xx --import-public-subnets subnet-xx,subnet-xx --import-private-subnets subnet-xx,subnet-xx
 copilot svc init --name ocs-web --svc-type "Load Balanced Web Service" --dockerfile ./Dockerfile
@@ -16,6 +21,7 @@ copilot svc init --name ocs-web --svc-type "Load Balanced Web Service" --dockerf
 # update settings e.g. RDS, Redis etc
 * db_instance_master_user_secret_arn
 * db_instance_address_secret_arn
+* redis_instance_address_secret_arn
 * django_secret_key_id
 
 copilot svc deploy --name ocs-web --env test

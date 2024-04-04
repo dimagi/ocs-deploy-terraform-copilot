@@ -22,4 +22,6 @@ module "vpc" {
 
   create_database_subnet_group = true
   database_subnet_group_name = "${local.name}-postgres-subnet-group"
+  create_elasticache_subnet_group = true
+  elasticache_subnet_group_name = "${local.name}-elasticache-subnet-group"
 }
