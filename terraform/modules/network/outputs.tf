@@ -22,10 +22,6 @@ output "database_subnet_group" {
     value       = module.vpc.database_subnet_group
 }
 
-output "database_security_group_id" {
-    value       = module.postgres_sg.security_group_id
-}
-
 output "elasticache_subnet_group" {
     value       = module.vpc.elasticache_subnet_group
 }

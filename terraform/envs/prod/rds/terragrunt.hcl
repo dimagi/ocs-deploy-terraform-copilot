@@ -18,5 +18,4 @@ inputs = {
   db_name                    = "ocs_${include.env.locals.environment}"
   db_username                = "ocs_${include.env.locals.environment}_user"
   database_subnet_group      = dependency.network.outputs.database_subnet_group
-  database_security_group_id = dependency.network.outputs.database_security_group_id
 }
