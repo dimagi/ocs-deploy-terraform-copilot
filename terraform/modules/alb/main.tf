@@ -4,6 +4,7 @@ locals {
 
 module "alb" {
   source = "terraform-aws-modules/alb/aws"
+  version = "~> 9.8"
 
   name    = local.name
   vpc_id  = var.vpc_id
@@ -58,15 +59,11 @@ module "alb" {
       certificate_arn = var.certificate_arn
 
       # default will only be used if no other rules match
-      fixed_response     = {
+      fixed_response = {
         content_type = "text/plain"
         message_body = "Not Found"
         status_code  = "404"
       }
-    }
-
-    forward = {
-      target_group_key = "ex-instance"
     }
   }
 }
