@@ -65,8 +65,8 @@ module "postgres_sg" {
 
 # put the db_instance_address in a secret for reference in other resources
 resource "aws_secretsmanager_secret" "db_instance_address" {
-  name                    = "db_instance_endpoint_arn"
-  description             = "RDS database instance endpoint ARN"
+  name                    = "${local.name}_address"
+  description             = "RDS database instance endpoint address"
 }
 
 resource "aws_secretsmanager_secret_version" "db_instance_address" {

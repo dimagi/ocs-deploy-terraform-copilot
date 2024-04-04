@@ -22,6 +22,6 @@ output "database_subnet_group" {
     value       = module.vpc.database_subnet_group
 }
 
-output "elasticache_subnet_group" {
-    value       = module.vpc.elasticache_subnet_group
+output "elasticache_subnets" {
+    value       = module.vpc.elasticache_subnets
 }
