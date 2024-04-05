@@ -8,6 +8,7 @@ locals {
    version_to_family_map = {
     "7.x" = "redis7"
     "7.0" = "redis7"
+    "7.1" = "redis7"
   }
 }
 
@@ -24,7 +25,7 @@ resource "aws_elasticache_replication_group" "redis" {
   automatic_failover_enabled    = true
   at_rest_encryption_enabled    = true
   auto_minor_version_upgrade    = true
-  maintenance_window            = "sun:05:00-sun:09:00"
+  maintenance_window            = "sun:07:30-sun:09:00"
   snapshot_retention_limit      = 7
   snapshot_window               = "06:30-07:30"
   subnet_group_name             = var.redis_subnet_group
