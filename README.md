@@ -1,5 +1,8 @@
 # chatbots-deploy
 
+* GitHub Actions push to ECR
+* Pipline deploys to ECS
+
 ```shell
 
 # 1Password "op://m735emfqlvrittifn4s6eioina/Cloudflare DNS API Key/credential"
