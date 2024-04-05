@@ -21,7 +21,7 @@ resource "aws_elasticache_replication_group" "redis" {
   replication_group_id          = local.name
   num_cache_clusters            = 2
   parameter_group_name          = local.param_group_name
-  port                          = 6397
+  port                          = var.redis_port
   automatic_failover_enabled    = true
   at_rest_encryption_enabled    = true
   auto_minor_version_upgrade    = true
@@ -85,12 +85,12 @@ module "redis_sg" {
 
 
 # put the primary_endpoint_address in a secret for reference in other resources
-resource "aws_secretsmanager_secret" "redis_instance_address" {
-  name                    = "${local.name}_address"
-  description             = "Redis instance endpoint address"
+resource "aws_secretsmanager_secret" "redis_instance_url" {
+  name                    = "${local.name}_url"
+  description             = "Redis instance endpoint url"
 }
 
-resource "aws_secretsmanager_secret_version" "redis_instance_address" {
-  secret_id     = aws_secretsmanager_secret.redis_instance_address.id
-  secret_string = aws_elasticache_replication_group.redis.primary_endpoint_address
+resource "aws_secretsmanager_secret_version" "redis_instance_url" {
+  secret_id     = aws_secretsmanager_secret.redis_instance_url.id
+  secret_string = "rediss://${aws_elasticache_replication_group.redis.primary_endpoint_address}:${aws_elasticache_replication_group.redis.port}"
 }

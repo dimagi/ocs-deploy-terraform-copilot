@@ -19,3 +19,8 @@ variable "node_type" {
   type = string
   default = "cache.t4g.micro"
 }
+
+variable "redis_port" {
+  type = number
+  default = 6379
+}

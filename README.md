@@ -36,7 +36,7 @@ Copy:
 terragrunt run-all --terragrunt-include-dir redis [plan,apply]
 
 Copy:
-* `redis_instance_address_secret_arn` to `copilot/chatbots/manifest.yml:secrets.REDIS_HOST`
+* `redis_instance_url_secret_arn` to `copilot/chatbots/manifest.yml:secrets.REDIS_URL`
 
 terragrunt run-all  --terragrunt-include-dir secrets [plan,apply]
 
