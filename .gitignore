@@ -7,3 +7,5 @@ vendor
 *.tfstate.backup
 *.out
 .terragrunt-cache
+.direnv
+.envrc
