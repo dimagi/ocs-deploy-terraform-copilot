@@ -1,0 +1,92 @@
+#  https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/
+# TODO:
+# - Add a healthcheck path.
+# - Addons for custom policy for access to SES, S3 etc. https://github.com/aws/copilot-cli/issues/4738
+
+
+# Your service name will be used in naming your resources like log groups, ECS services, etc.
+name: chatbots
+type: Load Balanced Web Service
+
+# Distribute traffic to your service.
+http:
+  # Requests to this path will be forwarded to your service.
+  # To match all requests you can use the "/" path.
+  path: '/'
+  alb: 'arn:aws:elasticloadbalancing:us-east-1:339713081433:loadbalancer/app/chatbots-prod-alb/774877878133e943'
+  # You can specify a custom health check path. The default is "/".
+  # healthcheck: '/'
+
+# Configuration for your containers and service.
+image:
+  # Docker build arguments. For additional overrides: https://aws.github.io/copilot-cli/docs/manifest/lb-web-service/#image-build
+  location: 339713081433.dkr.ecr.us-east-1.amazonaws.com/chatbots-prod-repository:latest
+  # Port exposed through your container to route traffic to it.
+  port: 8000
+
+cpu: 256       # Number of CPU units for the task.
+memory: 512    # Amount of memory in MiB used by the task.
+count: 1       # Number of tasks that should be running in your service.
+exec: true     # Enable running commands in your container.
+network:
+  connect: true # Enable Service Connect for intra-environment traffic between services.
+
+# storage:
+  # readonly_fs: true       # Limit to read-only access to mounted root filesystems.
+ 
+variables:
+  ALLOWED_HOSTS: '*'
+  DEBUG: true
+  NODE_ENV: development
+  DJANGO_DATABASE_NAME: ocs_prod
+  DJANGO_DATABASE_PORT: 5432
+  ACCOUNT_EMAIL_VERIFICATION: mandator
+  AWS_S3_REGION: us-east-1
+  AWS_SES_REGION: us-east-1
+  AZURE_REGION: eastus
+  DJANGO_SETTINGS_MODULE: gpt_playground.settings_production
+  PRIVACY_POLICY_URL: "https://www.dimagi.com/terms/latest/privacy/"
+  SIGNUP_ENABLED: False
+  TASKBADGER_ORG: dimagi
+  TASKBADGER_PROJECT: chatbots
+  TERMS_URL: "https://www.dimagi.com/terms/latest/tos/"
+  USE_S3_STORAGE: True
+  WHATSAPP_AWS_AUDIO_BUCKET: "TODO"
+  WHATSAPP_S3_AUDIO_BUCKET: "TODO"
+
+secrets:
+  SECRET_KEY: "'arn:aws:secretsmanager:us-east-1:339713081433:secret:chatbots-prod_django_secret_key-0eEN92'"
+  REDIS_URL: "'arn:aws:secretsmanager:us-east-1:339713081433:secret:chatbots-prod-cache_url-tObL6Y'"
+  DJANGO_DATABASE_HOST: "'arn:aws:secretsmanager:us-east-1:339713081433:secret:chatbots-prod-postgres_address-Mi9lYy'"
+  DJANGO_DATABASE_USER: "'arn:aws:secretsmanager:us-east-1:339713081433:secret:rds!db-58398c9d-7137-4e44-a430-21ac8df0dbf5-OCrjFE:username::'"
+  DJANGO_DATABASE_PASSWORD: "'arn:aws:secretsmanager:us-east-1:339713081433:secret:rds!db-58398c9d-7137-4e44-a430-21ac8df0dbf5-OCrjFE:password::'"
+  AWS_ACCESS_KEY_ID: "'TODO'"
+  AWS_PRIVATE_STORAGE_BUCKET_NAME: "'TODO'"
+  AWS_PUBLIC_STORAGE_BUCKET_NAME: "'TODO'"
+  AWS_SECRET_ACCESS_KEY: "'TODO'"  # S3 access
+  AWS_SES_ACCESS_KEY: "'TODO'"
+  AWS_SES_SECRET_KEY: "'TODO'"
+  AZURE_SUBSCRIPTION_KEY: "'TODO'"
+  CRYPTOGRAPHY_SALT: "'TODO'"
+  OPENAI_API_KEY: "'TODO'"
+  SENTRY_DSN: "'TODO'"
+  TASKBADGER_API_KEY: "'TODO'"
+  TELEGRAM_SECRET_TOKEN: "'TODO'"
+
+
+
+# You can override any of the values defined above by environment.
+#environments:
+#  test:
+#    count: 2               # Number of tasks to run for the "test" environment.
+#    deployment:            # The deployment strategy for the "test" environment.
+#       rolling: 'recreate' # Stops existing tasks before new ones are started for faster deployments.
+
+#logging:
+#  retention: 1
+#  destination:
+#    Name: cloudwatch
+#    region: us-east-1
+#    log_group_name: /chatbot/logs/
+#    log_stream_prefix: chatbot/
+#  env_file: ./logging.env
